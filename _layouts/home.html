@@ -1,0 +1,24 @@
+---
+layout: default
+---
+
+<div class="home">
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+        <h3>
+          <a class="post-link" href="{{ post.url | relative_url }}">
+            {{ post.title | escape }}
+          </a>
+        </h3>
+        
+        {% if post.overview %}
+          <div class="post-overview" style="color: #666; font-style: italic; margin-top: -10px; margin-bottom: 15px;">
+            {{ post.overview | escape }}
+          </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
