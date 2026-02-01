@@ -5,3 +5,5 @@ gem "jekyll"
 
 # If your site uses the standard GitHub Pages theme/plugins:
 gem "github-pages", group: :jekyll_plugins
+
+gem 'wdm', '>= 0.1.0'

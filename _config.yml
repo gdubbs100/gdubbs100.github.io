@@ -1,13 +1,13 @@
-title: "My Blogs Name"
+title: "P(X = nonsense) < ε"
 author: "Grant Nicholas"
-description: "Some short description of your blog can go here." # This will show up in places like twitter, linkedin, etc, if you share your sites url as a post.
+description: "ML, RL and other topics I enjoy" # This will show up in places like twitter, linkedin, etc, if you share your sites url as a post.
 
 # Email / Social media user names used by the minima theme:
 # All of these are optional and can be removed or commented out
 # email: "example@mail.com"
 # twitter_username: "twitteruser"
-github_username: "githubuser"
-linkedin_username: "linkedinuser"
+github_username: "gdubbs100"
+linkedin_username: "grant-nicholas-b98a14a1"
 #facebook_username: username
 #flickr_username: username
 #instagram_username: username
@@ -20,7 +20,7 @@ linkedin_username: "linkedinuser"
 #########################################################################################
 theme: "minima"
 
-rss: rss
+# rss: rss
 
 kramdown:
   math_engine: mathjax
