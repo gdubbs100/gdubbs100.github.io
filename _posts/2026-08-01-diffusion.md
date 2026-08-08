@@ -185,21 +185,22 @@ d_{chamfer}(A,B) = \frac{1}{2}\left(\frac{1}{N}\sum_{a \in A}\min_{b \in B}|a-b|
 $$
 
 Essentially, it takes the average distance of all points in set $A$ to the closest point in set $B$, and the average distance of all points in set $B$ to the closest point in set $A$ and divides by 2. By optimising this metric, Claude found the best diffusion coefficient and number of steps for each shape, plotted in the table below:
-┌──────────────┬────────────────────┬───────┬──────────────────┐
-│    shape     │ η (diffusion_coef) │ steps │ chamfer distance │
-├──────────────┼────────────────────┼───────┼──────────────────┤
-│ circle       │ 1.0                │ 34    │ 0.0182           │
-├──────────────┼────────────────────┼───────┼──────────────────┤
-│ line         │ 0.0                │ 34    │ 0.0106           │
-├──────────────┼────────────────────┼───────┼──────────────────┤
-│ spiral       │ 1.0                │ 34    │ 0.0362           │
-├──────────────┼────────────────────┼───────┼──────────────────┤
-│ three_circle │ 0.1                │ 100   │ 0.0538           │
-└──────────────┴────────────────────┴───────┴──────────────────┘
+
+| shape | η (diffusion_coef) | steps | chamfer distance |
+|---|---|---|---|
+| circle | 1.0 | 34 | 0.0182 |
+| line | 0.0 | 34 | 0.0106 |
+| spiral | 1.0 | 34 | 0.0362 |
+| three_circle | 0.1 | 100 | 0.0538 |
 
 We can see that these settings generate pretty nice shapes, although three circles is a bit of a struggle.
 
-
+<div style="display: flex; justify-content: center;">
+  <figure style="width: 100%; text-align: center;">
+    <img src="{{ '/images/20260801diffusion/best_ddim_per_shape.gif' | relative_url }}" alt="Best DDIM settings per shape" style="display: block; margin: 0 auto; max-width: 100%;">
+    <figcaption><b>Best DDIM settings per shape</b></figcaption>
+  </figure>
+</div>
 
 
 ### Value of $\eta$
@@ -207,16 +208,43 @@ Different values of $\eta$ don't appear to have a large impact on the final shap
 
 With $\eta=0.5$ or using the DDPM setting, we see that the simulation process is much more noisy right up to the final moment when the points congeal into the target distribution.
 
-|image of ETA simulation|
+<div style="display: flex; justify-content: center;">
+  <figure style="width: 100%; text-align: center;">
+    <img src="{{ '/images/20260801diffusion/grid_comparison.gif' | relative_url }}" alt="Comparison of eta values" style="display: block; margin: 0 auto; max-width: 100%;">
+    <figcaption><b>Comparison across values of &eta;</b></figcaption>
+  </figure>
+</div>
 
 ### Value of $T$
-Just taking simulation
+Values of $T$ also don't really have a large impact on the final outcome. Lower values of $T$ seem to result in a less tight distribution. I think this makes sense as I'm not sure the DDIM reparameterisation made the simulation process exact for fewer smaller $T$, just significantly more accurate.
+
+<div style="display: flex; justify-content: center;">
+  <figure style="width: 100%; text-align: center;">
+    <img src="{{ '/images/20260801diffusion/ddim_T_sweep_circle.gif' | relative_url }}" alt="Sweep of T values for the circle" style="display: block; margin: 0 auto; max-width: 100%;">
+    <figcaption><b>Sweep of $T$ for the circle distribution</b></figcaption>
+  </figure>
+</div>
 
 ### Guidance
-Above we trained one model for each shape, but we don't actually need to do this ...
+Above we trained one model for each shape, but we don't actually need to do this. With image generators, often you will be able to provide a text prompt and generate a corresponding image. This process is called guided generation [genAI w SDE]. Essentially the output is conditioned on the text input so that certain types of conditioning inputs generate samples from a certain kind of distribution.
 
-Simple overview
+It is simple to do this for my toy shape examples - we add a one-hot-encoded binary variable ($l$) representing the shape of a given sample so that our noise estimator $ \hat{\epsilon}_{\theta}(x, t, l)$ predicted class specific noise. The figure below shows that this works pretty well for this problem. For more complicated problems, however, this simple approach runs the risk that the model will ignore the effect of the label or guidance for some classes. As such, generally diffusion models use a different approach called "classifier-free guidance", which I have not investigated here.
 
-Examples
+<div style="display: flex; justify-content: center;">
+  <figure style="width: 100%; text-align: center;">
+    <img src="{{ '/images/20260801diffusion/multiclass_ddim.gif' | relative_url }}" alt="Multiclass DDIM guidance" style="display: block; margin: 0 auto; max-width: 100%;">
+    <figcaption><b>Multiclass DDIM</b></figcaption>
+  </figure>
+</div>
 
 ## Conclusion
+So thats a basic overview of diffusion models. They're kind of cool. It was fun to read into them and build them from scratch. 
+
+## Bibliography
+TODO
+
+
+### Post-script on Claude use
+With this project, I decided to relax a bit with my Claude use. I've found that lately, when writing code, I've been heavily using agentic methods. To be honest, I felt like my skills were dulling and I was enjoying making things less. For this project, I still used Claude, however, I spent most of the time implementing the algorithms myself. I really took the time to think about what I wanted the code to do and how best to code it. When I'd given things a go first, I'd then ask Claude for advice on how I could improve it and if my algorithm implementations were sound. That said, while most of the code is my own, I did get Claude to write the visualisations, just because making them nice and putting them into videos is a bit tedious.
+
+I also engaged Claude to train models once I'd built the system, as well as tuning parameters. It was cool to just set it on a task and let it do it for me. Finding hyper-params / nursing models is pretty simple to do, but tedious, so it is great we can automate that. Although I do wonder how efficient it is to do this with "raw" Claude. I would have thought Bayesian Optimisation based approaches would be optimal in some respect, so using up an expensive token budget to do something that could be done with a script might be sub-optimal.
