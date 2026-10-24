@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Force \"images\\\\20261024vicelection\")"
+    ]
+  }
+}
